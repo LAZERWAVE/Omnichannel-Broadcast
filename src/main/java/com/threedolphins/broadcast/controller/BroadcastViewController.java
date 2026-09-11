@@ -3,11 +3,14 @@ package com.threedolphins.broadcast.controller;
 import com.threedolphins.broadcast.model.BroadcastJob;
 import com.threedolphins.broadcast.model.BroadcastStatus;
 import com.threedolphins.broadcast.model.Customer;
+import com.threedolphins.broadcast.model.CustomerStatus;
 import com.threedolphins.broadcast.service.BroadcastService;
 import jakarta.annotation.PostConstruct;
 import jakarta.faces.view.ViewScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.faces.application.FacesMessage;
+import jakarta.faces.context.FacesContext;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -48,6 +51,30 @@ public class BroadcastViewController implements Serializable {
     public void startBroadcast() {
 
         if (message == null || message.isBlank()) {
+
+            FacesContext.getCurrentInstance().addMessage(
+                    "broadcastForm:message",
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Message required",
+                            "Please enter a message before starting the broadcast."
+                    )
+            );
+
+            return;
+        }
+
+        if (message.length() > 500) {
+
+            FacesContext.getCurrentInstance().addMessage(
+                    "broadcastForm:message",
+                    new FacesMessage(
+                            FacesMessage.SEVERITY_ERROR,
+                            "Message too long",
+                            "Message must not exceed 500 characters."
+                    )
+            );
+
             return;
         }
 
@@ -62,6 +89,42 @@ public class BroadcastViewController implements Serializable {
                 );
 
         status = BroadcastStatus.RUNNING;
+    }
+
+    public String getCustomerStatusClass(Long customerId) {
+
+        if (currentJob == null) {
+            return "status-pending";
+        }
+
+        switch (currentJob.getStatus(customerId)) {
+            case SENT:
+                return "status-sent";
+
+            case FAILED:
+                return "status-failed";
+
+            case PROCESSING:
+                return "status-processing";
+
+            case PENDING:
+            default:
+                return "status-pending";
+        }
+    }
+
+    public String getCustomerStatusLabel(Long customerId) {
+
+        if (currentJob == null) {
+            return "PENDING";
+        }
+
+        CustomerStatus customerStatus =
+                currentJob.getStatus(customerId);
+
+        return customerStatus == null
+                ? "PENDING"
+                : customerStatus.name();
     }
 
     public void checkProgress() {

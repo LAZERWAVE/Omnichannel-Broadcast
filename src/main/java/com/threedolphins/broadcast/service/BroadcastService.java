@@ -29,32 +29,51 @@ public class BroadcastService {
 
             executorConfig.getExecutorService().submit(() -> {
 
-                job.setStatus(
-                        customer.getId(),
-                        CustomerStatus.PROCESSING
-                );
+               job.setStatus(
+                       customer.getId(),
+                       CustomerStatus.PROCESSING
+               );
 
-                SendResult result =
-                        messagingService.send(customer, message);
+               try {
 
-                if (result.isSuccess()) {
+                   SendResult result =
+                           messagingService.send(customer, message);
 
-                    job.setStatus(
-                            customer.getId(),
-                            CustomerStatus.SENT
-                    );
+                   if (result.isSuccess()) {
 
-                    job.incrementSent();
+                       job.setStatus(
+                               customer.getId(),
+                               CustomerStatus.SENT
+                       );
 
-                } else {
+                       job.incrementSent();
 
-                    job.setStatus(
-                            customer.getId(),
-                            CustomerStatus.FAILED
-                    );
+                   } else {
 
-                    job.incrementFailed();
-                }
+                       job.setStatus(
+                               customer.getId(),
+                               CustomerStatus.FAILED
+                       );
+
+                       job.incrementFailed();
+                   }
+
+               } catch (Exception e) {
+
+                   job.setStatus(
+                           customer.getId(),
+                           CustomerStatus.FAILED
+                   );
+
+                   job.incrementFailed();
+
+                   System.err.println(
+                           "Failed to send message to customer "
+                                   + customer.getId()
+                                   + ": "
+                                   + e.getMessage()
+                   );
+               }
             });
         }
 

@@ -1,131 +1,339 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
-      xmlns:f="jakarta.faces.core"
       xmlns:p="primefaces">
 
 <h:head>
     <title>Priority Broadcast</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 30px;
+            background: #f5f6fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            color: #6b7280;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            padding: 20px;
+            border-radius: 8px;
+            background: white;
+            border: 1px solid #e5e7eb;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .progress-container {
+            margin-top: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .progress-percentage {
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-sent {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-failed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-processing {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-pending {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .completion-message {
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </h:head>
 
 <h:body>
 
-    <h:form id="broadcastForm">
+    <div class="page-container">
 
-        <p:panel header="Priority Broadcast">
+        <h1 class="page-title">Priority Broadcast</h1>
 
-            <p:panelGrid columns="1"
-                         layout="grid"
-                         styleClass="ui-fluid">
+        <p class="page-subtitle">
+            Send an important message to your customers.
+        </p>
 
-                <p:outputLabel
-                        for="message"
-                        value="Broadcast Message"/>
+        <!-- Broadcast Message -->
+        <h:form id="broadcastForm">
+
+            <p:messages id="messages"
+                        showDetail="true"
+                        closable="true"/>
+
+            <p:panel header="Broadcast Message"
+                     styleClass="section">
 
                 <p:inputTextarea
                         id="message"
                         value="#{broadcastView.message}"
                         rows="5"
                         maxlength="500"
+                        autoResize="true"
                         placeholder="Enter your broadcast message..."
+                        disabled="#{broadcastView.broadcastRunning}"
+                        style="width:100%; box-sizing:border-box;"/>
+
+                <br/>
+                <br/>
+
+                <p:commandButton
+                        id="startButton"
+                        value="Start Priority Broadcast"
+                        action="#{broadcastView.startBroadcast}"
+                        update="@form"
+                        icon="pi pi-send"
                         disabled="#{broadcastView.broadcastRunning}"/>
 
-            </p:panelGrid>
-
-            <br/>
-
-            <p:commandButton
-                    id="startButton"
-                    value="Start Priority Broadcast"
-                    action="#{broadcastView.startBroadcast}"
-                    update="@form"
-                    icon="pi pi-send"
-                    disabled="#{broadcastView.broadcastRunning}"/>
-
-        </p:panel>
+            </p:panel>
 
 
-        <br/>
+            <!-- Broadcast Progress -->
+            <!-- This wrapper is always rendered so AJAX can safely update it -->
+            <p:outputPanel id="progressSection"
+                           styleClass="section">
 
-        <p:panel header="Broadcast Progress"
-                 rendered="#{broadcastView.currentJob != null}">
+                <p:panel
+                        header="Broadcast Progress"
+                        rendered="#{broadcastView.currentJob != null}">
 
-            <p:progressBar
-                    id="progress"
-                    value="#{broadcastView.progress}"
-                    labelTemplate="{value}%"
-                    style="height: 30px"/>
-            <p:messages id="messages"
-                        showDetail="true"
-                        closable="true"/>
+                    <div class="progress-container">
 
-            <br/>
+                        <div class="progress-header">
 
-            <p:panelGrid id="stats"
-                         columns="3"
-                         layout="grid"
-                         styleClass="ui-fluid">
+                            <span>Delivery Progress</span>
 
-                <p:panel header="Processed">
-                    <h:outputText
-                            value="#{broadcastView.processedCount} / #{broadcastView.totalCount}"/>
+                            <span class="progress-percentage">
+                            <h:outputText value="#{broadcastView.progress}"/>%
+                        </span>
+
+                        </div>
+
+                        <p:progressBar
+                                id="progress"
+                                value="#{broadcastView.progress}"
+                                displayOnly="true"
+                                style="height:25px;"/>
+
+                    </div>
+
+
+                    <!-- Statistics -->
+                    <div class="stats-grid">
+
+                        <div class="stat-card">
+
+                            <div class="stat-label">
+                                Processed
+                            </div>
+
+                            <div class="stat-value">
+
+                                <h:outputText
+                                        id="processedCount"
+                                        value="#{broadcastView.processedCount}"/>
+
+                                /
+
+                                <h:outputText
+                                        value="#{broadcastView.totalCount}"/>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-label">
+                                Sent
+                            </div>
+
+                            <div class="stat-value">
+
+                                <h:outputText
+                                        id="sentCount"
+                                        value="#{broadcastView.sentCount}"/>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="stat-card">
+
+                            <div class="stat-label">
+                                Failed
+                            </div>
+
+                            <div class="stat-value">
+
+                                <h:outputText
+                                        id="failedCount"
+                                        value="#{broadcastView.failedCount}"/>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Completion message -->
+                    <p:outputPanel
+                            id="completion"
+                            rendered="#{broadcastView.isBroadcastCompleted()}"
+                            styleClass="completion-message">
+
+                        <h:outputText value="Broadcast completed."/>
+
+                    </p:outputPanel>
+
                 </p:panel>
 
-                <p:panel header="Sent">
-                    <h:outputText
-                            value="#{broadcastView.sentCount}"/>
-                </p:panel>
-
-                <p:panel header="Failed">
-                    <h:outputText
-                            value="#{broadcastView.failedCount}"/>
-                </p:panel>
-
-            </p:panelGrid>
-
-        </p:panel>
+            </p:outputPanel>
 
 
-        <br/>
+            <!-- Customer List -->
+            <p:panel header="Customers"
+                     styleClass="section">
 
-        <p:panel header="Customers">
+                <p:dataTable
+                        id="customerTable"
+                        value="#{broadcastView.customers}"
+                        var="customer"
+                        rows="10"
+                        paginator="false"
+                        responsiveLayout="scroll">
 
-            <p:dataTable
-                    id="customerTable"
-                    value="#{broadcastView.customers}"
-                    var="customer"
-                    stripedRows="true"
-                    paginator="false">
+                    <p:column headerText="ID"
+                              style="width:80px">
 
-                <p:column headerText="ID">
-                    <h:outputText value="#{customer.id}"/>
-                </p:column>
+                        <h:outputText
+                                value="#{customer.id}"/>
 
-                <p:column headerText="Customer">
-                    <h:outputText value="#{customer.name}"/>
-                </p:column>
-
-                <p:column headerText="Phone">
-                    <h:outputText value="#{customer.phoneNumber}"/>
-                </p:column>
-
-                <p:column headerText="Status">
-
-                    <h:outputText
-                            value="#{broadcastView.currentJob.getStatus(customer.id)}"/>
-
-                </p:column>
-
-            </p:dataTable>
-
-        </p:panel>
+                    </p:column>
 
 
-        <p:poll interval="1"
-                listener="#{broadcastView.checkProgress}"
-                update="progress customerTable startButton stats"
-                rendered="#{broadcastView.broadcastRunning}"/>
-    </h:form>
+                    <p:column headerText="Customer">
+
+                        <h:outputText
+                                value="#{customer.name}"/>
+
+                    </p:column>
+
+
+                    <p:column headerText="Phone">
+
+                        <h:outputText
+                                value="#{customer.phoneNumber}"/>
+
+                    </p:column>
+
+
+                    <p:column headerText="Status"
+                              style="width:150px">
+
+                    <span class="status-badge
+                        #{broadcastView.getCustomerStatusClass(customer.id)}">
+
+                        <h:outputText
+                                value="#{broadcastView.getCustomerStatusLabel(customer.id)}"/>
+
+                    </span>
+
+                    </p:column>
+
+                </p:dataTable>
+
+            </p:panel>
+
+
+            <!-- Poll for asynchronous progress -->
+            <!-- Only stable components are targeted -->
+            <p:poll
+                    interval="1"
+                    listener="#{broadcastView.checkProgress}"
+                    update="progressSection customerTable startButton"
+                    rendered="#{broadcastView.broadcastRunning}"/>
+
+        </h:form>
+
+    </div>
 
 </h:body>
 
