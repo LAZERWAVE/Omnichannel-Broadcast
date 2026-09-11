@@ -1,1 +1,9 @@
-com\threedolphins\broadcast\controller\BroadcastView.class
+com\threedolphins\broadcast\model\Customer.class
+com\threedolphins\broadcast\model\BroadcastStatus.class
+com\threedolphins\broadcast\controller\BroadcastViewController.class
+com\threedolphins\broadcast\model\BroadcastJob.class
+com\threedolphins\broadcast\model\CustomerStatus.class
+com\threedolphins\broadcast\service\MockMessagingService.class
+com\threedolphins\broadcast\config\ExecutorConfig.class
+com\threedolphins\broadcast\model\SendResult.class
+com\threedolphins\broadcast\service\BroadcastService.class
