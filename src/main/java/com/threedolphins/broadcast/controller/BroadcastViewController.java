@@ -13,7 +13,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Named
+@Named("broadcastView")
 @ViewScoped
 public class BroadcastViewController implements Serializable {
 
@@ -62,6 +62,13 @@ public class BroadcastViewController implements Serializable {
                 );
 
         status = BroadcastStatus.RUNNING;
+    }
+
+    public void checkProgress() {
+
+        if (currentJob != null && currentJob.isCompleted()) {
+            status = BroadcastStatus.COMPLETED;
+        }
     }
 
     public String getMessage() {

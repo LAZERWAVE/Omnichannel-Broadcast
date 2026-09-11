@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="jakarta.faces.html"
+      xmlns:f="jakarta.faces.core"
       xmlns:p="primefaces">
 
 <h:head>
@@ -9,30 +10,121 @@
 
 <h:body>
 
-    <h1>Priority Broadcast</h1>
-
     <h:form id="broadcastForm">
 
-        <p:panel header="Broadcast Message">
+        <p:panel header="Priority Broadcast">
 
-            <p:inputTextarea
-                    id="message"
-                    value="#{broadcastView.message}"
-                    rows="5"
-                    cols="60"
-                    placeholder="Enter your broadcast message..." />
+            <p:panelGrid columns="1"
+                         layout="grid"
+                         styleClass="ui-fluid">
 
-            <br/>
+                <p:outputLabel
+                        for="message"
+                        value="Broadcast Message"/>
+
+                <p:inputTextarea
+                        id="message"
+                        value="#{broadcastView.message}"
+                        rows="5"
+                        maxlength="500"
+                        placeholder="Enter your broadcast message..."
+                        disabled="#{broadcastView.broadcastRunning}"/>
+
+            </p:panelGrid>
+
             <br/>
 
             <p:commandButton
+                    id="startButton"
                     value="Start Priority Broadcast"
                     action="#{broadcastView.startBroadcast}"
                     update="@form"
-                    icon="pi pi-send"/>
+                    icon="pi pi-send"
+                    disabled="#{broadcastView.broadcastRunning}"/>
 
         </p:panel>
 
+
+        <br/>
+
+        <p:panel header="Broadcast Progress"
+                 rendered="#{broadcastView.currentJob != null}">
+
+            <p:progressBar
+                    id="progress"
+                    value="#{broadcastView.progress}"
+                    labelTemplate="{value}%"
+                    style="height: 30px"/>
+            <p:messages id="messages"
+                        showDetail="true"
+                        closable="true"/>
+
+            <br/>
+
+            <p:panelGrid id="stats"
+                         columns="3"
+                         layout="grid"
+                         styleClass="ui-fluid">
+
+                <p:panel header="Processed">
+                    <h:outputText
+                            value="#{broadcastView.processedCount} / #{broadcastView.totalCount}"/>
+                </p:panel>
+
+                <p:panel header="Sent">
+                    <h:outputText
+                            value="#{broadcastView.sentCount}"/>
+                </p:panel>
+
+                <p:panel header="Failed">
+                    <h:outputText
+                            value="#{broadcastView.failedCount}"/>
+                </p:panel>
+
+            </p:panelGrid>
+
+        </p:panel>
+
+
+        <br/>
+
+        <p:panel header="Customers">
+
+            <p:dataTable
+                    id="customerTable"
+                    value="#{broadcastView.customers}"
+                    var="customer"
+                    stripedRows="true"
+                    paginator="false">
+
+                <p:column headerText="ID">
+                    <h:outputText value="#{customer.id}"/>
+                </p:column>
+
+                <p:column headerText="Customer">
+                    <h:outputText value="#{customer.name}"/>
+                </p:column>
+
+                <p:column headerText="Phone">
+                    <h:outputText value="#{customer.phoneNumber}"/>
+                </p:column>
+
+                <p:column headerText="Status">
+
+                    <h:outputText
+                            value="#{broadcastView.currentJob.getStatus(customer.id)}"/>
+
+                </p:column>
+
+            </p:dataTable>
+
+        </p:panel>
+
+
+        <p:poll interval="1"
+                listener="#{broadcastView.checkProgress}"
+                update="progress customerTable startButton stats"
+                rendered="#{broadcastView.broadcastRunning}"/>
     </h:form>
 
 </h:body>
