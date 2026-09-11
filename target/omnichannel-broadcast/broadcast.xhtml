@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces">
+
+<h:head>
+    <title>Priority Broadcast</title>
+</h:head>
+
+<h:body>
+
+    <h1>Priority Broadcast</h1>
+
+    <h:form id="broadcastForm">
+
+        <p:panel header="Broadcast Message">
+
+            <p:inputTextarea
+                    id="message"
+                    value="#{broadcastView.message}"
+                    rows="5"
+                    cols="60"
+                    placeholder="Enter your broadcast message..." />
+
+            <br/>
+            <br/>
+
+            <p:commandButton
+                    value="Start Priority Broadcast"
+                    action="#{broadcastView.startBroadcast}"
+                    update="@form"
+                    icon="pi pi-send"/>
+
+        </p:panel>
+
+    </h:form>
+
+</h:body>
+
+</html>
