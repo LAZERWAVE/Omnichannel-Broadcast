@@ -20,6 +20,8 @@ import java.util.List;
 @ViewScoped
 public class BroadcastViewController implements Serializable {
 
+    private static final int MAX_MESSAGE_LENGTH = 500;
+
     private String message;
 
     private List<Customer> customers;
@@ -64,14 +66,16 @@ public class BroadcastViewController implements Serializable {
             return;
         }
 
-        if (message.length() > 500) {
+        if (message.length() > MAX_MESSAGE_LENGTH) {
 
             FacesContext.getCurrentInstance().addMessage(
                     "broadcastForm:message",
                     new FacesMessage(
                             FacesMessage.SEVERITY_ERROR,
                             "Message too long",
-                            "Message must not exceed 500 characters."
+                            "Message must not exceed "
+                                    + MAX_MESSAGE_LENGTH
+                                    + " characters."
                     )
             );
 

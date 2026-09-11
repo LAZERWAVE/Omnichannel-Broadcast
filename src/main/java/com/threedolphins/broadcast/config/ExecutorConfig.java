@@ -9,7 +9,10 @@ import java.util.concurrent.Executors;
 @ApplicationScoped
 public class ExecutorConfig {
 
-    private final ExecutorService executorService =Executors.newFixedThreadPool(5);
+    private static final int WORKER_THREAD_COUNT = 5;
+
+    private final ExecutorService executorService =
+            Executors.newFixedThreadPool(WORKER_THREAD_COUNT);
 
     public ExecutorService getExecutorService() {
         return executorService;
