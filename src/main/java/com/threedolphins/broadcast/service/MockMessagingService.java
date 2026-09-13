@@ -15,6 +15,7 @@ public class MockMessagingService {
     private static final int FAILURE_RATE_PERCENT = 10;
     private static final int PERCENTAGE_RANGE = 100;
 
+    // customer and message are unused due to simulation
     public SendResult send(Customer customer, String message) {
 
         try {

@@ -9,6 +9,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @ApplicationScoped
 public class BroadcastService {
@@ -18,6 +20,9 @@ public class BroadcastService {
 
     @Inject
     private ExecutorConfig executorConfig;
+
+    private static final Logger LOGGER =
+            Logger.getLogger(BroadcastService.class.getName());
 
     public BroadcastJob startBroadcast(
             List<Customer> customers,
@@ -67,11 +72,10 @@ public class BroadcastService {
 
                    job.incrementFailed();
 
-                   System.err.println(
-                           "Failed to send message to customer "
-                                   + customer.getId()
-                                   + ": "
-                                   + e.getMessage()
+                   LOGGER.log(
+                           Level.WARNING,
+                           "Failed to send message to customer " + customer.getId(),
+                           e
                    );
                }
             });

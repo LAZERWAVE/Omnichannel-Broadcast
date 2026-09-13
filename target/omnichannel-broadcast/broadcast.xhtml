@@ -287,6 +287,7 @@
                                             value="Start Priority Broadcast"
                                             action="#{broadcastView.startBroadcast}"
                                             update="@form"
+                                            oncomplete="PF('broadcastPoll').start()"
                                             icon="pi pi-send"
                                             disabled="#{broadcastView.broadcastRunning}"
                                             styleClass="primary-button"/>
@@ -571,6 +572,7 @@
                             widgetVar="broadcastPoll"
                             interval="1"
                             async="false"
+                            autoStart="false"
                             listener="#{broadcastView.checkProgress}"
                             update="progressSection customerTable startButton sentCountTop failedCountTop"/>
 

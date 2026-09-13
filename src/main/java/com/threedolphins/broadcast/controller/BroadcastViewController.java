@@ -113,21 +113,12 @@ public class BroadcastViewController implements Serializable {
             return "status-pending";
         }
 
-        switch (customerStatus) {
-
-            case SENT:
-                return "status-sent";
-
-            case FAILED:
-                return "status-failed";
-
-            case PROCESSING:
-                return "status-processing";
-
-            case PENDING:
-            default:
-                return "status-pending";
-        }
+        return switch (customerStatus) {
+            case SENT -> "status-sent";
+            case FAILED -> "status-failed";
+            case PROCESSING -> "status-processing";
+            case PENDING -> "status-pending";
+        };
     }
 
     public String getCustomerStatusLabel(Long customerId) {

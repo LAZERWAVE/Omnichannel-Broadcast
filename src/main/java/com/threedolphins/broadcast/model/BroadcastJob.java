@@ -85,11 +85,4 @@ public class BroadcastJob implements Serializable {
             endTimeMillis = System.currentTimeMillis();
         }
     }
-
-    public void updateCompletionTime() {
-
-        if (isCompleted() && endTimeMillis == null) {
-            endTimeMillis = System.currentTimeMillis();
-        }
-    }
 }
