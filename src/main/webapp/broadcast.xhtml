@@ -4,247 +4,218 @@
       xmlns:p="primefaces">
 
 <h:head>
-    <title>Priority Broadcast</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 30px;
-            background: #f5f6fa;
-            font-family: Arial, sans-serif;
-        }
+    <title>3Dolphins | Priority Broadcast</title>
 
-        .page-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0"/>
 
-        .page-title {
-            margin-bottom: 5px;
-        }
+    <h:outputStylesheet
+            library="css"
+            name="broadcast.css"/>
 
-        .page-subtitle {
-            color: #6b7280;
-            margin-top: 0;
-            margin-bottom: 25px;
-        }
-
-        .section {
-            margin-bottom: 20px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .stat-card {
-            padding: 20px;
-            border-radius: 8px;
-            background: white;
-            border: 1px solid #e5e7eb;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            color: #6b7280;
-            margin-bottom: 8px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .progress-container {
-            margin-top: 20px;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .progress-percentage {
-            font-weight: bold;
-            font-size: 18px;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .status-sent {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-failed {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .status-processing {
-            background: #fef3c7;
-            color: #92400e;
-        }
-
-        .status-pending {
-            background: #e5e7eb;
-            color: #374151;
-        }
-
-        .completion-message {
-            margin-top: 20px;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </h:head>
 
 <h:body>
 
-    <div class="page-container">
+    <div class="app-shell">
 
-        <h1 class="page-title">Priority Broadcast</h1>
+        <!-- =========================
+             SIDEBAR
+             ========================= -->
 
-        <p class="page-subtitle">
-            Send an important message to your customers.
-        </p>
+        <aside class="sidebar">
 
-        <!-- Broadcast Message -->
-        <h:form id="broadcastForm">
+            <div class="brand">
 
-            <p:messages id="messages"
-                        showDetail="true"
-                        closable="true"/>
+                <div class="brand-icon">
+                    <i class="pi pi-send"></i>
+                </div>
 
-            <p:panel header="Broadcast Message"
-                     styleClass="section">
+                <div>
+                    <div class="brand-name">
+                        3Dolphins
+                    </div>
 
-                <p:inputTextarea
-                        id="message"
-                        value="#{broadcastView.message}"
-                        rows="5"
-                        maxlength="501"
-                        autoResize="true"
-                        placeholder="Enter your broadcast message..."
-                        disabled="#{broadcastView.broadcastRunning}"
-                        style="width:100%; box-sizing:border-box;"/>
+                    <div class="brand-subtitle">
+                        Connect. Engage. Grow.
+                    </div>
+                </div>
 
+            </div>
+
+            <div class="nav-item active">
+                <i class="pi pi-send"></i>
+                <span>Broadcast</span>
+            </div>
+
+            <div class="nav-item">
+                <i class="pi pi-users"></i>
+                <span>Customers</span>
+            </div>
+
+            <div class="nav-item">
+                <i class="pi pi-chart-bar"></i>
+                <span>Reports</span>
+            </div>
+
+            <div class="nav-item">
+                <i class="pi pi-cog"></i>
+                <span>Settings</span>
+            </div>
+
+            <div class="sidebar-footer">
+                <strong>Priority Broadcast</strong>
                 <br/>
-                <br/>
+                Omnichannel messaging engine
+            </div>
 
-                <p:commandButton
-                        id="startButton"
-                        value="Start Priority Broadcast"
-                        action="#{broadcastView.startBroadcast}"
-                        update="@form"
-                        icon="pi pi-send"
-                        disabled="#{broadcastView.broadcastRunning}"/>
-
-            </p:panel>
+        </aside>
 
 
-            <!-- Broadcast Progress -->
-            <!-- This wrapper is always rendered so AJAX can safely update it -->
-            <p:outputPanel id="progressSection"
-                           styleClass="section">
+        <!-- =========================
+             MAIN CONTENT
+             ========================= -->
 
-                <p:panel
-                        header="Broadcast Progress"
-                        rendered="#{broadcastView.currentJob != null}">
+        <main class="main-content">
 
-                    <div class="progress-container">
+            <div class="content-container">
 
-                        <div class="progress-header">
+                <!-- HEADER -->
 
-                            <span>Delivery Progress</span>
+                <div class="top-header">
 
-                            <span class="progress-percentage">
-                            <h:outputText value="#{broadcastView.progress}"/>%
-                        </span>
+                    <div>
 
+                        <div class="eyebrow">
+                            OMNICHANNEL BROADCAST
                         </div>
 
-                        <p:progressBar
-                                id="progress"
-                                value="#{broadcastView.progress}"
-                                displayOnly="true"
-                                style="height:25px;"/>
+                        <h1 class="page-title">
+                            Send Messages to Your Customers
+                        </h1>
+
+                        <p class="page-subtitle">
+                            Reach your customers quickly with priority messaging.
+                        </p>
+
+                    </div>
+
+                    <div class="user-area">
+
+                        <div class="user-avatar">
+                            JD
+                        </div>
+
+                        <span>
+                        John Doe
+                    </span>
+
+                        <i class="pi pi-chevron-down"></i>
+
+                    </div>
+
+                </div>
+
+
+                <!-- =========================
+                     FORM
+                     ========================= -->
+
+                <h:form id="broadcastForm">
+
+                    <!-- Messages -->
+
+                    <div class="messages-container">
+
+                        <p:messages
+                                id="messages"
+                                showDetail="true"
+                                closable="true"/>
 
                     </div>
 
 
-                    <!-- Statistics -->
+                    <!-- =========================
+                         STAT CARDS
+                         ========================= -->
+
                     <div class="stats-grid">
 
-                        <div class="stat-card">
+                        <!-- Total Customers -->
 
-                            <div class="stat-label">
-                                Processed
+                        <div class="card stat-card">
+
+                            <div class="stat-icon blue">
+                                <i class="pi pi-users"></i>
                             </div>
 
-                            <div class="stat-value">
+                            <div>
 
-                                <h:outputText
-                                        id="processedCount"
-                                        value="#{broadcastView.processedCount}"/>
+                                <div class="stat-label">
+                                    Total Customers
+                                </div>
 
-                                /
+                                <div class="stat-value">
 
-                                <h:outputText
-                                        value="#{broadcastView.totalCount}"/>
+                                    <h:outputText
+                                            value="#{broadcastView.totalCount}"/>
 
-                            </div>
-
-                        </div>
-
-
-                        <div class="stat-card">
-
-                            <div class="stat-label">
-                                Sent
-                            </div>
-
-                            <div class="stat-value">
-
-                                <h:outputText
-                                        id="sentCount"
-                                        value="#{broadcastView.sentCount}"/>
+                                </div>
 
                             </div>
 
                         </div>
 
 
-                        <div class="stat-card">
+                        <!-- Sent -->
 
-                            <div class="stat-label">
-                                Failed
+                        <div class="card stat-card">
+
+                            <div class="stat-icon green">
+                                <i class="pi pi-check-circle"></i>
                             </div>
 
-                            <div class="stat-value">
+                            <div>
 
-                                <h:outputText
-                                        id="failedCount"
-                                        value="#{broadcastView.failedCount}"/>
+                                <div class="stat-label">
+                                    Messages Sent
+                                </div>
+
+                                <div class="stat-value">
+
+                                    <h:outputText
+                                            id="sentCountTop"
+                                            value="#{broadcastView.sentCount}"/>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <!-- Failed -->
+
+                        <div class="card stat-card">
+
+                            <div class="stat-icon red">
+                                <i class="pi pi-times-circle"></i>
+                            </div>
+
+                            <div>
+
+                                <div class="stat-label">
+                                    Failed
+                                </div>
+
+                                <div class="stat-value">
+
+                                    <h:outputText
+                                            id="failedCountTop"
+                                            value="#{broadcastView.failedCount}"/>
+
+                                </div>
 
                             </div>
 
@@ -253,85 +224,361 @@
                     </div>
 
 
-                    <!-- Completion message -->
-                    <p:outputPanel
-                            id="completion"
-                            rendered="#{broadcastView.isBroadcastCompleted()}"
-                            styleClass="completion-message">
+                    <!-- =========================
+                         BROADCAST + PROGRESS
+                         ========================= -->
 
-                        <h:outputText value="Broadcast completed."/>
+                    <!-- Stable AJAX update target -->
+                    <p:outputPanel id="progressSection">
+
+                        <div class="broadcast-grid">
+
+
+                            <!-- =========================
+                                 MESSAGE CARD
+                                 ========================= -->
+
+                            <div class="card section-card">
+
+                                <div class="section-header">
+
+                                    <div class="section-icon">
+                                        <i class="pi pi-comment"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <h2 class="section-title">
+                                            Broadcast Message
+                                        </h2>
+
+                                        <p class="section-description">
+                                            Compose your priority message and send it to all customers.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <div class="message-wrapper">
+
+                                    <p:inputTextarea
+                                            id="message"
+                                            value="#{broadcastView.message}"
+                                            rows="5"
+                                            maxlength="500"
+                                            autoResize="true"
+                                            placeholder="Enter your broadcast message..."
+                                            disabled="#{broadcastView.broadcastRunning}"
+                                            styleClass="broadcast-textarea"/>
+
+                                    <div class="message-counter">
+                                        Maximum 500 characters
+                                    </div>
+
+                                </div>
+
+
+                                <div class="broadcast-actions">
+
+                                    <p:commandButton
+                                            id="startButton"
+                                            value="Start Priority Broadcast"
+                                            action="#{broadcastView.startBroadcast}"
+                                            update="@form"
+                                            icon="pi pi-send"
+                                            disabled="#{broadcastView.broadcastRunning}"
+                                            styleClass="primary-button"/>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- =========================
+                                 PROGRESS CARD
+                                 ========================= -->
+
+                            <p:outputPanel
+                                    id="progressCard"
+                                    rendered="#{broadcastView.currentJob != null}"
+                                    styleClass="card section-card">
+
+                                <div class="section-header">
+
+                                    <div class="section-icon">
+                                        <i class="pi pi-chart-line"></i>
+                                    </div>
+
+                                    <div>
+
+                                        <h2 class="section-title">
+                                            Live Progress
+                                        </h2>
+
+                                        <p class="section-description">
+                                            Real-time delivery status.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Progress percentage -->
+
+                                <div class="progress-summary">
+
+                                <span class="progress-label">
+                                    Delivery Progress
+                                </span>
+
+                                    <span class="progress-percent">
+
+                                    <h:outputText
+                                            value="#{broadcastView.progress}"/>%
+
+                                </span>
+
+                                </div>
+
+
+                                <!-- Progress bar -->
+
+                                <p:progressBar
+                                        id="progress"
+                                        value="#{broadcastView.progress}"
+                                        displayOnly="true"/>
+
+
+                                <!-- Progress information -->
+
+                                <div class="progress-details">
+
+
+                                    <!-- Status -->
+
+                                    <div class="progress-row">
+
+                                    <span class="progress-row-label">
+                                        Status
+                                    </span>
+
+                                        <span class="progress-row-value">
+
+                                        <span class="status-badge
+                                            #{broadcastView.broadcastRunning
+                                                ? 'status-processing'
+                                                : 'status-sent'}">
+
+                                            <h:outputText
+                                                    value="#{broadcastView.status}"/>
+
+                                        </span>
+
+                                    </span>
+
+                                    </div>
+
+
+                                    <!-- Started -->
+
+                                    <div class="progress-row">
+
+                                    <span class="progress-row-label">
+                                        Started
+                                    </span>
+
+                                        <span class="progress-row-value">
+
+                                        <h:outputText
+                                                value="#{broadcastView.startTime}"/>
+
+                                    </span>
+
+                                    </div>
+
+
+                                    <!-- Estimated Remaining -->
+
+                                    <div class="progress-row">
+
+                                    <span class="progress-row-label">
+                                        Estimated Remaining
+                                    </span>
+
+                                        <span class="progress-row-value">
+
+                                        <h:outputText
+                                                value="#{broadcastView.estimatedTimeRemaining}"/>
+
+                                    </span>
+
+                                    </div>
+
+
+                                    <!-- Elapsed -->
+
+                                    <div class="progress-row">
+
+                                    <span class="progress-row-label">
+                                        Elapsed
+                                    </span>
+
+                                        <span class="progress-row-value">
+
+                                        <h:outputText
+                                                value="#{broadcastView.elapsedTime}"/>
+
+                                    </span>
+
+                                    </div>
+
+
+                                    <!-- Finished -->
+
+                                    <div class="progress-row">
+
+                                    <span class="progress-row-label">
+                                        Finished
+                                    </span>
+
+                                        <span class="progress-row-value">
+
+                                        <h:outputText
+                                                value="#{broadcastView.endTime}"/>
+
+                                    </span>
+
+                                    </div>
+
+                                </div>
+
+
+                                <!-- Completion message -->
+
+                                <p:outputPanel
+                                        rendered="#{broadcastView.isBroadcastCompleted()}"
+                                        styleClass="completed-box">
+
+                                    <i class="pi pi-check-circle"></i>
+
+                                    <span>
+                                    Broadcast completed successfully.
+                                </span>
+
+                                </p:outputPanel>
+
+                            </p:outputPanel>
+
+                        </div>
 
                     </p:outputPanel>
 
-                </p:panel>
 
-            </p:outputPanel>
+                    <!-- =========================
+                         CUSTOMER TABLE
+                         ========================= -->
 
+                    <div class="card customers-card">
 
-            <!-- Customer List -->
-            <p:panel header="Customers"
-                     styleClass="section">
+                        <div class="customer-header">
 
-                <p:dataTable
-                        id="customerTable"
-                        value="#{broadcastView.customers}"
-                        var="customer"
-                        rows="10"
-                        paginator="false"
-                        responsiveLayout="scroll">
+                            <div class="customer-header-text">
 
-                    <p:column headerText="ID"
-                              style="width:80px">
+                                <h2>
+                                    Customer Delivery Status
+                                </h2>
 
-                        <h:outputText
-                                value="#{customer.id}"/>
+                                <p>
+                                    Real-time delivery status for each customer.
+                                </p>
 
-                    </p:column>
+                            </div>
+
+                        </div>
 
 
-                    <p:column headerText="Customer">
+                        <p:dataTable
+                                id="customerTable"
+                                value="#{broadcastView.customers}"
+                                var="customer"
+                                rows="10"
+                                paginator="false"
+                                responsiveLayout="scroll"
+                                styleClass="customer-table">
 
-                        <h:outputText
-                                value="#{customer.name}"/>
+                            <!-- ID -->
 
-                    </p:column>
+                            <p:column
+                                    headerText="#"
+                                    style="width:70px">
 
+                                <h:outputText
+                                        value="#{customer.id}"/>
 
-                    <p:column headerText="Phone">
-
-                        <h:outputText
-                                value="#{customer.phoneNumber}"/>
-
-                    </p:column>
-
-
-                    <p:column headerText="Status"
-                              style="width:150px">
-
-                    <span class="status-badge
-                        #{broadcastView.getCustomerStatusClass(customer.id)}">
-
-                        <h:outputText
-                                value="#{broadcastView.getCustomerStatusLabel(customer.id)}"/>
-
-                    </span>
-
-                    </p:column>
-
-                </p:dataTable>
-
-            </p:panel>
+                            </p:column>
 
 
-            <!-- Poll for asynchronous progress -->
-            <!-- Only stable components are targeted -->
-            <p:poll
-                    interval="1"
-                    listener="#{broadcastView.checkProgress}"
-                    update="progressSection customerTable startButton"
-                    rendered="#{broadcastView.broadcastRunning}"/>
+                            <!-- Customer -->
 
-        </h:form>
+                            <p:column headerText="Customer">
+
+                                <h:outputText
+                                        value="#{customer.name}"/>
+
+                            </p:column>
+
+
+                            <!-- Phone -->
+
+                            <p:column headerText="Phone">
+
+                                <h:outputText
+                                        value="#{customer.phoneNumber}"/>
+
+                            </p:column>
+
+
+                            <!-- Status -->
+
+                            <p:column
+                                    headerText="Status"
+                                    style="width:150px">
+
+                            <span class="status-badge
+                                #{broadcastView.getCustomerStatusClass(customer.id)}">
+
+                                <h:outputText
+                                        value="#{broadcastView.getCustomerStatusLabel(customer.id)}"/>
+
+                            </span>
+
+                            </p:column>
+
+                        </p:dataTable>
+
+                    </div>
+
+
+                    <!-- =========================
+                         AJAX POLLING
+                         ========================= -->
+
+                    <p:poll
+                            id="broadcastPoll"
+                            widgetVar="broadcastPoll"
+                            interval="1"
+                            async="false"
+                            listener="#{broadcastView.checkProgress}"
+                            update="progressSection customerTable startButton sentCountTop failedCountTop"/>
+
+                </h:form>
+
+            </div>
+
+        </main>
 
     </div>
 

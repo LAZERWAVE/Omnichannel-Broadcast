@@ -1,5 +1,7 @@
 package com.threedolphins.broadcast.controller;
 
+import org.primefaces.PrimeFaces;
+
 import com.threedolphins.broadcast.model.BroadcastJob;
 import com.threedolphins.broadcast.model.BroadcastStatus;
 import com.threedolphins.broadcast.model.Customer;
@@ -12,7 +14,10 @@ import jakarta.inject.Named;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 
+
 import java.io.Serializable;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,7 +106,15 @@ public class BroadcastViewController implements Serializable {
             return "status-pending";
         }
 
-        switch (currentJob.getStatus(customerId)) {
+        CustomerStatus customerStatus =
+                currentJob.getStatus(customerId);
+
+        if (customerStatus == null) {
+            return "status-pending";
+        }
+
+        switch (customerStatus) {
+
             case SENT:
                 return "status-sent";
 
@@ -131,10 +144,115 @@ public class BroadcastViewController implements Serializable {
                 : customerStatus.name();
     }
 
-    public void checkProgress() {
+    public String getStartTime() {
 
+        if (currentJob == null) {
+            return "-";
+        }
+
+        return formatTime(currentJob.getStartTimeMillis());
+    }
+
+    public String getEndTime() {
+
+        if (currentJob == null ||
+                currentJob.getEndTimeMillis() == null) {
+
+            return "-";
+        }
+
+        return formatTime(currentJob.getEndTimeMillis());
+    }
+
+    public String getElapsedTime() {
+
+        if (currentJob == null) {
+            return "-";
+        }
+
+        long endTime =
+                currentJob.getEndTimeMillis() != null
+                        ? currentJob.getEndTimeMillis()
+                        : System.currentTimeMillis();
+
+        long elapsedSeconds =
+                Duration.ofMillis(
+                        endTime - currentJob.getStartTimeMillis()
+                ).getSeconds();
+
+        return formatDuration(elapsedSeconds);
+    }
+
+    public String getEstimatedTimeRemaining() {
+
+        if (currentJob == null ||
+                currentJob.isCompleted()) {
+
+            return "-";
+        }
+
+        int processed = currentJob.getProcessedCount();
+
+        if (processed == 0) {
+            return "Calculating...";
+        }
+
+        long elapsedMillis =
+                System.currentTimeMillis()
+                        - currentJob.getStartTimeMillis();
+
+        double averageMillisPerCustomer =
+                (double) elapsedMillis / processed;
+
+        int remaining =
+                currentJob.getTotalCount() - processed;
+
+        long estimatedMillis =
+                (long) (averageMillisPerCustomer * remaining);
+
+        long estimatedSeconds =
+                Math.max(
+                        1,
+                        Duration.ofMillis(estimatedMillis).getSeconds()
+                );
+
+        return "~" + formatDuration(estimatedSeconds);
+    }
+
+    private String formatTime(long millis) {
+
+        return java.time.LocalDateTime
+                .ofInstant(
+                        Instant.ofEpochMilli(millis),
+                        java.time.ZoneId.systemDefault()
+                )
+                .format(
+                        java.time.format.DateTimeFormatter
+                                .ofPattern("HH:mm:ss")
+                );
+    }
+
+    private String formatDuration(long seconds) {
+
+        if (seconds < 60) {
+            return seconds + " seconds";
+        }
+
+        long minutes = seconds / 60;
+        long remainingSeconds = seconds % 60;
+
+        return minutes + "m "
+                + remainingSeconds + "s";
+    }
+
+    public void checkProgress() {
         if (currentJob != null && currentJob.isCompleted()) {
+
+            currentJob.markCompleted();
             status = BroadcastStatus.COMPLETED;
+
+            PrimeFaces.current()
+                    .executeScript("PF('broadcastPoll').stop()");
         }
     }
 

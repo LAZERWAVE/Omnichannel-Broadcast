@@ -1,16 +1,22 @@
 package com.threedolphins.broadcast.model;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class BroadcastJob {
+public class BroadcastJob implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final Map<Long, CustomerStatus> customerStatuses =
             new ConcurrentHashMap<>();
 
     private final AtomicInteger sentCount = new AtomicInteger();
     private final AtomicInteger failedCount = new AtomicInteger();
+
+    private final long startTimeMillis = System.currentTimeMillis();
+    private volatile Long endTimeMillis;
 
     public BroadcastJob(Iterable<Customer> customers) {
         for (Customer customer : customers) {
@@ -64,5 +70,26 @@ public class BroadcastJob {
 
     public boolean isCompleted() {
         return getProcessedCount() >= getTotalCount();
+    }
+
+    public long getStartTimeMillis() {
+        return startTimeMillis;
+    }
+
+    public Long getEndTimeMillis() {
+        return endTimeMillis;
+    }
+
+    public void markCompleted() {
+        if (endTimeMillis == null) {
+            endTimeMillis = System.currentTimeMillis();
+        }
+    }
+
+    public void updateCompletionTime() {
+
+        if (isCompleted() && endTimeMillis == null) {
+            endTimeMillis = System.currentTimeMillis();
+        }
     }
 }
